@@ -1,0 +1,58 @@
+# Python相关
+*.py[cod]
+*.pyo
+__pycache__/
+*.so
+
+# 虚拟环境
+venv/
+.venv/
+
+# IDE/编辑器
+.idea/
+*.swp
+.vscode/**
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+*.sublime-project
+*.sublime-workspace
+
+# 日志文件
+log
+*.log
+*.out
+*.err
+
+# 数据库
+*.sqlite3
+*.db
+
+# 测试和覆盖率
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# 环境文件
+env/**
+!env/.env.example
+
+# 本地配置文件
+*.local
+*.discard
+
+# 静态文件
+staticfiles/
+mediafiles/
+
+# 临时文件
+*.bak
+*.tmp
+
+# Docker相关
+docker-compose.override.yml
+*.dockerfile
