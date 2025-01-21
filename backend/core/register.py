@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from backend.common.logger import register_logger
 from backend.core.config import settings
 
 
@@ -25,7 +26,7 @@ def register_app():
     )
 
     # # 日志
-    # register_logger()
+    register_logger()
     #
     # # 静态文件
     # register_static_file(app)
