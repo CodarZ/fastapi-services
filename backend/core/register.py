@@ -8,11 +8,21 @@ from fastapi import FastAPI
 from backend.common.logger import register_logger
 from backend.core.config import settings
 from backend.core.paths import STATIC_DIR
+from backend.database.mysql import create_table
+from backend.database.redis import redis_client
 
 
 @asynccontextmanager
-async def register_lifespan(app: FastAPI):
+async def register_lifespan(_: FastAPI):
+    # 创建数据库表
+    await create_table()
+    # 连接 redis
+    await redis_client.open()
+
     yield
+
+    # 关闭 redis 连接
+    await redis_client.close()
 
 
 def register_app():
@@ -27,22 +37,22 @@ def register_app():
         lifespan=register_lifespan,
     )
 
-    # # 日志
+    # 日志
     register_logger()
-    #
-    # # 静态文件
+
+    # 静态文件
     register_static_file(app)
-    #
-    # # 中间件
+
+    # 中间件
     # register_middleware(app)
-    #
-    # # 路由
+
+    # 路由
     # register_router(app)
-    #
-    # # 分页
+
+    # 分页
     # register_page(app)
-    #
-    # # 全局异常处理
+
+    # 全局异常处理
     # register_exception(app)
 
     return app
@@ -59,3 +69,27 @@ def register_static_file(app: FastAPI):
             os.makedirs(STATIC_DIR)
 
         app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+def register_middleware(app) -> None:
+    """
+    中间件，执行顺序从下往上
+    :param app:
+    :return:
+    """
+    # 接口访问日志
+    if settings.MIDDLEWARE_ACCESS:
+        from backend.middleware.access import AccessMiddleware
+
+        app.add_middleware(AccessMiddleware)
+    # 跨域: 需要一直配置在最后
+    if settings.MIDDLEWARE_CORS:
+        from starlette.middleware.cors import CORSMiddleware
+
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
