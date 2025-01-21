@@ -1,10 +1,9 @@
 from pathlib import Path
 
-from fastapi import FastAPI
-
 from backend.core.config import settings
+from backend.core.register import register_app
 
-app = FastAPI()
+app = register_app()
 
 
 if __name__ == "__main__":
