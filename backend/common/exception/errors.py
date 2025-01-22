@@ -9,14 +9,17 @@
 
 from typing import Any
 
+# 用于构建 HTTP 协议中的标准异常响应。
 from fastapi import HTTPException
-# Starlette 提供的后台任务类
+# Starlette 提供的后台任务类，支持在异常处理时执行异步任务。
 from starlette.background import BackgroundTask
 
-from backend.common.response.code import CustomErrorCode, StandardResponseCode
-
-
 # 导入自定义的错误码类，用于定义异常的响应状态码和消息
+from backend.common.response.code import (
+    CustomErrorCode,
+    CustomResponseCode,
+    StandardResponseCode,
+)
 
 
 # ========== 基础异常类 ==========
@@ -45,11 +48,7 @@ class BaseExceptionMixin(Exception):
 
 # ========== HTTP 异常类 ==========
 class HTTPError(HTTPException):
-    """
-    自定义 HTTP 异常：
-    - 继承 FastAPI 提供的 HTTPException。
-    - 支持设置自定义状态码、消息和响应头。
-    """
+    """自定义 HTTP 异常"""
 
     def __init__(
         self, *, code: int, msg: Any = None, headers: dict[str, Any] | None = None
@@ -79,89 +78,14 @@ class CustomError(BaseExceptionMixin):
 
 # ========== 常见 HTTP 异常 ==========
 class RequestError(BaseExceptionMixin):
-    """
-    请求错误异常：
-    - 默认 HTTP 状态码为 400（Bad Request）。
-    """
+    """请求错误异常：400（Bad Request）"""
 
     code = StandardResponseCode.HTTP_400
 
     def __init__(
         self,
         *,
-        msg: str = "Bad Request",
-        data: Any = None,
-        background: BackgroundTask | None = None
-    ):
-        super().__init__(msg=msg, data=data, background=background)
-
-
-class ForbiddenError(BaseExceptionMixin):
-    """
-    禁止访问异常：
-    - 默认 HTTP 状态码为 403（Forbidden）。
-    """
-
-    code = StandardResponseCode.HTTP_403
-
-    def __init__(
-        self,
-        *,
-        msg: str = "Forbidden",
-        data: Any = None,
-        background: BackgroundTask | None = None
-    ):
-        super().__init__(msg=msg, data=data, background=background)
-
-
-class NotFoundError(BaseExceptionMixin):
-    """
-    资源未找到异常：
-    - 默认 HTTP 状态码为 404（Not Found）。
-    """
-
-    code = StandardResponseCode.HTTP_404
-
-    def __init__(
-        self,
-        *,
-        msg: str = "Not Found",
-        data: Any = None,
-        background: BackgroundTask | None = None
-    ):
-        super().__init__(msg=msg, data=data, background=background)
-
-
-class ServerError(BaseExceptionMixin):
-    """
-    服务器内部错误异常：
-    - 默认 HTTP 状态码为 500（Internal Server Error）。
-    """
-
-    code = StandardResponseCode.HTTP_500
-
-    def __init__(
-        self,
-        *,
-        msg: str = "Internal Server Error",
-        data: Any = None,
-        background: BackgroundTask | None = None
-    ):
-        super().__init__(msg=msg, data=data, background=background)
-
-
-class GatewayError(BaseExceptionMixin):
-    """
-    网关错误异常：
-    - 默认 HTTP 状态码为 502（Bad Gateway）。
-    """
-
-    code = StandardResponseCode.HTTP_502
-
-    def __init__(
-        self,
-        *,
-        msg: str = "Bad Gateway",
+        msg: str = CustomResponseCode.HTTP_400.msg,
         data: Any = None,
         background: BackgroundTask | None = None
     ):
@@ -169,17 +93,74 @@ class GatewayError(BaseExceptionMixin):
 
 
 class AuthorizationError(BaseExceptionMixin):
-    """
-    授权失败异常：
-    - 默认 HTTP 状态码为 401（Permission Denied）。
-    """
+    """授权失败异常：401（Permission Denied）"""
 
     code = StandardResponseCode.HTTP_401
 
     def __init__(
         self,
         *,
-        msg: str = "Permission Denied",
+        msg: str = CustomResponseCode.HTTP_401.msg,
+        data: Any = None,
+        background: BackgroundTask | None = None
+    ):
+        super().__init__(msg=msg, data=data, background=background)
+
+
+class ForbiddenError(BaseExceptionMixin):
+    """禁止访问异常：403（Forbidden）"""
+
+    code = StandardResponseCode.HTTP_403
+
+    def __init__(
+        self,
+        *,
+        msg: str = CustomResponseCode.HTTP_403.msg,
+        data: Any = None,
+        background: BackgroundTask | None = None
+    ):
+        super().__init__(msg=msg, data=data, background=background)
+
+
+class NotFoundError(BaseExceptionMixin):
+    """资源未找到异常：404（Not Found）"""
+
+    code = StandardResponseCode.HTTP_404
+
+    def __init__(
+        self,
+        *,
+        msg: str = CustomResponseCode.HTTP_404.msg,
+        data: Any = None,
+        background: BackgroundTask | None = None
+    ):
+        super().__init__(msg=msg, data=data, background=background)
+
+
+class ServerError(BaseExceptionMixin):
+    """服务器内部错误异常：500（Internal Server Error）"""
+
+    code = StandardResponseCode.HTTP_500
+
+    def __init__(
+        self,
+        *,
+        msg: str = CustomResponseCode.HTTP_500.msg,
+        data: Any = None,
+        background: BackgroundTask | None = None
+    ):
+        super().__init__(msg=msg, data=data, background=background)
+
+
+class GatewayError(BaseExceptionMixin):
+    """网关错误异常：502（Bad Gateway）"""
+
+    code = StandardResponseCode.HTTP_502
+
+    def __init__(
+        self,
+        *,
+        msg: str = CustomResponseCode.HTTP_502.msg,
         data: Any = None,
         background: BackgroundTask | None = None
     ):
@@ -188,16 +169,12 @@ class AuthorizationError(BaseExceptionMixin):
 
 # ========== 特殊 HTTP 异常 ==========
 class TokenError(HTTPError):
-    """
-    认证失败异常：
-    - 默认 HTTP 状态码为 401（Not Authenticated）。
-    - 继承自 HTTPError，支持自定义响应头。
-    """
+    """认证失败异常：401（Not Authenticated）"""
 
     code = StandardResponseCode.HTTP_401
 
     def __init__(
-        self, *, msg: str = "Not Authenticated", headers: dict[str, Any] | None = None
+        self, *, msg: str = "身份验证失败", headers: dict[str, Any] | None = None
     ):
         super().__init__(
             code=self.code, msg=msg, headers=headers or {"WWW-Authenticate": "Bearer"}
