@@ -3,6 +3,7 @@
 import os
 from contextlib import asynccontextmanager
 
+from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 
@@ -13,6 +14,7 @@ from backend.core.config import settings
 from backend.core.paths import STATIC_DIR
 from backend.database.mysql import create_table
 from backend.database.redis import redis_client
+from middleware.state import StateMiddleware
 
 
 @asynccontextmanager
@@ -54,7 +56,7 @@ def register_app():
     register_static_file(app)
 
     # 中间件
-    # register_middleware(app)
+    register_middleware(app)
 
     # 路由
     # register_router(app)
@@ -92,14 +94,30 @@ def register_middleware(app) -> None:
         from backend.middleware.access import AccessMiddleware
 
         app.add_middleware(AccessMiddleware)
+
+    # State
+    app.add_middleware(StateMiddleware)
+    # Trace ID (必须)
+    app.add_middleware(CorrelationIdMiddleware, validator=False)
     # 跨域: 需要一直配置在最后
+    # if settings.MIDDLEWARE_CORS:
+    #     from starlette.middleware.cors import CORSMiddleware
+    #
+    #     app.add_middleware(
+    #         CORSMiddleware,
+    #         allow_origins=["*"],
+    #         allow_credentials=True,
+    #         allow_methods=["*"],
+    #         allow_headers=["*"],
+    #     )
     if settings.MIDDLEWARE_CORS:
-        from starlette.middleware.cors import CORSMiddleware
+        from fastapi.middleware.cors import CORSMiddleware
 
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],
+            allow_origins=settings.CORS_ALLOWED_ORIGINS,
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
+            expose_headers=settings.CORS_EXPOSE_HEADERS,
         )
