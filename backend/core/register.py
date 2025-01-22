@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
+from fastapi_pagination import add_pagination
 
 from backend.common.exception.handler import register_exception
 from backend.common.logger import register_logger
@@ -62,7 +63,7 @@ def register_app():
     # register_router(app)
 
     # 分页
-    # register_page(app)
+    register_page(app)
 
     # 全局异常处理
     register_exception(app)
@@ -121,3 +122,8 @@ def register_middleware(app) -> None:
             allow_headers=["*"],
             expose_headers=settings.CORS_EXPOSE_HEADERS,
         )
+
+
+def register_page(app: FastAPI):
+    """分页查询"""
+    add_pagination(app)
