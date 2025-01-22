@@ -8,14 +8,16 @@ from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 from fastapi_pagination import add_pagination
 
+from app.router import all_routes
 from backend.common.exception.handler import register_exception
 from backend.common.logger import register_logger
-from backend.common.response.check import http_limit_callback
+from backend.common.response.check import ensure_unique_route_names, http_limit_callback
 from backend.core.config import settings
 from backend.core.paths import STATIC_DIR
 from backend.database.mysql import create_table
 from backend.database.redis import redis_client
 from middleware.state import StateMiddleware
+from utils.openapi import simplify_operation_ids
 
 
 @asynccontextmanager
@@ -60,7 +62,7 @@ def register_app():
     register_middleware(app)
 
     # 路由
-    # register_router(app)
+    register_router(app)
 
     # 分页
     register_page(app)
@@ -122,6 +124,17 @@ def register_middleware(app) -> None:
             allow_headers=["*"],
             expose_headers=settings.CORS_EXPOSE_HEADERS,
         )
+
+
+def register_router(app: FastAPI):
+    """路由"""
+
+    # API
+    app.include_router(all_routes, dependencies=None)
+
+    # Extra
+    ensure_unique_route_names(app)
+    simplify_operation_ids(app)
 
 
 def register_page(app: FastAPI):
