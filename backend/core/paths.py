@@ -19,3 +19,6 @@ LOG_DIR = os.path.join(BasePath, "log")
 
 # static 挂载静态目录
 STATIC_DIR = os.path.join(BasePath, "static")
+
+# 离线 IP 数据库路径
+Ip2RegionPath = os.path.join(STATIC_DIR, "ip2region.xdb")
