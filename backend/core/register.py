@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 
+from backend.common.exception.handler import register_exception
 from backend.common.logger import register_logger
 from backend.common.response.check import http_limit_callback
 from backend.core.config import settings
@@ -62,7 +63,7 @@ def register_app():
     # register_page(app)
 
     # 全局异常处理
-    # register_exception(app)
+    register_exception(app)
 
     return app
 
