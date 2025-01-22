@@ -13,9 +13,9 @@ from backend.common.exception.message import (
     USAGE_ERROR_MESSAGES,
     VALIDATION_ERROR_MESSAGES,
 )
+from backend.common.request.trace_id import get_request_trace_id
 from backend.common.response.base import response_base
 from backend.common.response.code import CustomResponseCode, StandardResponseCode
-from backend.common.resquest.trace_id import get_request_trace_id
 from backend.core.config import settings
 from backend.utils.serializers import MsgSpecJSONResponse
 
