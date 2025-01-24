@@ -87,46 +87,50 @@ class ResponseBase:
 
     @staticmethod
     def __response(
-        *, res: CustomResponseCode | CustomResponse = None, data: Any | None = None
+        *, res: CustomResponseCode | CustomResponse = None, msg: str = None, code: int = None, data: Any | None = None
     ) -> ResponseModel | ResponseSchemaModel:
-        """
-        内部通用响应方法，用于生成 ResponseModel 实例。
+        response_code = code if code is not None else res.code
+        response_msg = msg if msg is not None else res.msg
 
-        :param res: 返回信息（CustomResponseCode 或 CustomResponse 实例）
-        :param data: 返回数据（可选）
-        :return: 统一格式的 ResponseModel 实例
-        """
-        return ResponseModel(code=res.code, msg=res.msg, data=data)
+        return ResponseModel(code=response_code, msg=response_msg, data=data)
 
     def success(
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_200,
+        msg: str = None,
+        code: int = None,
         data: Any | None = None,
     ) -> ResponseModel | ResponseSchemaModel:
         """
         快捷方法，用于生成成功响应。
 
-        :param res: 成功状态码及信息（默认为 HTTP_200）
+        :param res: 成功状态码及信息（默认为 HTTP_200）（CustomResponseCode 或 CustomResponse 实例）
+        :param msg: 自定义返回消息（可选）
+        :param code: 自定义返回状态码（可选）
         :param data: 成功返回的数据（可选）
-        :return: 统一格式的成功响应模型
+        :return: 统一格式的成功响应 ResponseModel 模型
         """
-        return self.__response(res=res, data=data)
+        return self.__response(res=res, msg=msg, code=code, data=data)
 
     def fail(
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_400,
+        msg: str = None,
+        code: int = None,
         data: Any = None,
     ) -> ResponseModel | ResponseSchemaModel:
         """
         快捷方法，用于生成失败响应。
 
-        :param res: 失败状态码及信息（默认为 HTTP_400）
+        :param res: 失败状态码及信息（默认为 HTTP_400）（CustomResponseCode 或 CustomResponse 实例）
+        :param msg: 自定义返回消息（可选）
+        :param code: 自定义返回状态码（可选）
         :param data: 失败返回的数据（可选）
-        :return: 统一格式的失败响应模型
+        :return: 统一格式的失败响应 ResponseModel 模型
         """
-        return self.__response(res=res, data=data)
+        return self.__response(res=res, msg=msg, code=code, data=data)
 
     @staticmethod
     def fast_success(
