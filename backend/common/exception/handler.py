@@ -87,7 +87,8 @@ async def _validation_exception_handler(request: Request, e: RequestValidationEr
         "data": data,
     }
     request.state.__request_validation_exception__ = content  # 用于在中间件中获取异常信息
-    content.update(trace_id=get_request_trace_id(request))  # 添加请求唯一标识
+    if settings.ENVIRONMENT == "development":
+        content.update(trace_id=get_request_trace_id(request))  # 添加请求唯一标识
     return MsgSpecJSONResponse(status_code=422, content=content)
 
 
@@ -105,7 +106,8 @@ def register_exception(app: FastAPI):
             res = response_base.fail(res=CustomResponseCode.HTTP_400)
             content = res.model_dump()
         request.state.__request_http_exception__ = content
-        content.update(trace_id=get_request_trace_id(request))
+        if settings.ENVIRONMENT == "development":
+            content.update(trace_id=get_request_trace_id(request))
         return MsgSpecJSONResponse(
             status_code=_get_exception_code(exc.status_code),
             content=content,
@@ -131,7 +133,8 @@ def register_exception(app: FastAPI):
             "data": None,
         }
         request.state.__request_pydantic_user_error__ = content
-        content.update(trace_id=get_request_trace_id(request))
+        if settings.ENVIRONMENT == "development":
+            content.update(trace_id=get_request_trace_id(request))
         return MsgSpecJSONResponse(
             status_code=StandardResponseCode.HTTP_500,
             content=content,
@@ -150,7 +153,8 @@ def register_exception(app: FastAPI):
             res = response_base.fail(res=CustomResponseCode.HTTP_500)
             content = res.model_dump()
         request.state.__request_assertion_error__ = content
-        content.update(trace_id=get_request_trace_id(request))
+        if settings.ENVIRONMENT == "development":
+            content.update(trace_id=get_request_trace_id(request))
         return MsgSpecJSONResponse(
             status_code=StandardResponseCode.HTTP_500,
             content=content,
@@ -165,7 +169,8 @@ def register_exception(app: FastAPI):
             "data": exc.data if exc.data else None,
         }
         request.state.__request_custom_exception__ = content
-        content.update(trace_id=get_request_trace_id(request))
+        if settings.ENVIRONMENT == "development":
+            content.update(trace_id=get_request_trace_id(request))
         return MsgSpecJSONResponse(
             status_code=_get_exception_code(exc.code),
             content=content,
@@ -185,7 +190,8 @@ def register_exception(app: FastAPI):
             res = response_base.fail(res=CustomResponseCode.HTTP_500)
             content = res.model_dump()
         request.state.__request_all_unknown_exception__ = content
-        content.update(trace_id=get_request_trace_id(request))
+        if settings.ENVIRONMENT == "development":
+            content.update(trace_id=get_request_trace_id(request))
         return MsgSpecJSONResponse(
             status_code=StandardResponseCode.HTTP_500,
             content=content,
@@ -218,7 +224,8 @@ def register_exception(app: FastAPI):
                     res = response_base.fail(res=CustomResponseCode.HTTP_500)
                     content = res.model_dump()
             request.state.__request_cors_500_exception__ = content
-            content.update(trace_id=get_request_trace_id(request))
+            if settings.ENVIRONMENT == "development":
+                content.update(trace_id=get_request_trace_id(request))
             response = MsgSpecJSONResponse(
                 status_code=(exc.code if isinstance(exc, BaseExceptionMixin) else StandardResponseCode.HTTP_500),
                 content=content,
