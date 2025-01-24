@@ -97,8 +97,8 @@ class OperaLogCipherEnum(IntEnum):
 class StatusEnum(IntEnum):
     """状态类型枚举"""
 
-    disable = 0
-    enable = 1
+    NO = 0
+    YES = 1
 
 
 class UserSocialEnum(str, Enum):
