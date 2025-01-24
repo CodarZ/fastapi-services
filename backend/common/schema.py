@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr, validate_email
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
@@ -51,7 +53,7 @@ class SchemaBase(BaseModel):
 
     配置项
     - `use_enum_values=True`: 序列化时使用枚举值，便于与前端或其他系统的交互。
-
+    - `datetime` 类型的自定义序列化，输出格式为 YYYY-MM-DD HH:MM:SS。
     示例:
 
     ```python
@@ -68,4 +70,8 @@ class SchemaBase(BaseModel):
     print(data.dict())  # 输出: {"value": "Option A"}
     ```
     """
-    model_config = ConfigDict(use_enum_values=True)
+    model_config = ConfigDict(use_enum_values=True,
+                              json_encoders={
+                                  datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
+                              }
+                              )
