@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from fastapi import APIRouter
 
-from core.config import settings
+from backend.app.admin.api.router import admin_router
 
-all_routes = APIRouter(prefix=settings.API_ROUTE_PREFIX)
+all_routes = APIRouter()
+
+all_routes.include_router(admin_router)
