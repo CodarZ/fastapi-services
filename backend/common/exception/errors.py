@@ -34,13 +34,7 @@ class BaseExceptionMixin(Exception):
 
     code: int
 
-    def __init__(
-        self,
-        *,
-        msg: str = None,
-        data: Any = None,
-        background: BackgroundTask | None = None
-    ):
+    def __init__(self, *, msg: str = None, data: Any = None, background: BackgroundTask | None = None):
         self.msg = msg  # 错误消息
         self.data = data  # 附加数据
         self.background = background  # 异步后台任务
@@ -50,9 +44,7 @@ class BaseExceptionMixin(Exception):
 class HTTPError(HTTPException):
     """自定义 HTTP 异常"""
 
-    def __init__(
-        self, *, code: int, msg: Any = None, headers: dict[str, Any] | None = None
-    ):
+    def __init__(self, *, code: int, msg: Any = None, headers: dict[str, Any] | None = None):
         super().__init__(status_code=code, detail=msg, headers=headers)
 
 
@@ -65,13 +57,7 @@ class CustomError(BaseExceptionMixin):
     - background: 后台任务（可选）。
     """
 
-    def __init__(
-        self,
-        *,
-        error: CustomErrorCode,
-        data: Any = None,
-        background: BackgroundTask | None = None
-    ):
+    def __init__(self, *, error: CustomErrorCode, data: Any = None, background: BackgroundTask | None = None):
         self.code = error.code  # 错误码
         super().__init__(msg=error.msg, data=data, background=background)
 
@@ -83,11 +69,7 @@ class RequestError(BaseExceptionMixin):
     code = StandardResponseCode.HTTP_400
 
     def __init__(
-        self,
-        *,
-        msg: str = CustomResponseCode.HTTP_400.msg,
-        data: Any = None,
-        background: BackgroundTask | None = None
+        self, *, msg: str = CustomResponseCode.HTTP_400.msg, data: Any = None, background: BackgroundTask | None = None
     ):
         super().__init__(msg=msg, data=data, background=background)
 
@@ -98,11 +80,7 @@ class AuthorizationError(BaseExceptionMixin):
     code = StandardResponseCode.HTTP_401
 
     def __init__(
-        self,
-        *,
-        msg: str = CustomResponseCode.HTTP_401.msg,
-        data: Any = None,
-        background: BackgroundTask | None = None
+        self, *, msg: str = CustomResponseCode.HTTP_401.msg, data: Any = None, background: BackgroundTask | None = None
     ):
         super().__init__(msg=msg, data=data, background=background)
 
@@ -113,11 +91,7 @@ class ForbiddenError(BaseExceptionMixin):
     code = StandardResponseCode.HTTP_403
 
     def __init__(
-        self,
-        *,
-        msg: str = CustomResponseCode.HTTP_403.msg,
-        data: Any = None,
-        background: BackgroundTask | None = None
+        self, *, msg: str = CustomResponseCode.HTTP_403.msg, data: Any = None, background: BackgroundTask | None = None
     ):
         super().__init__(msg=msg, data=data, background=background)
 
@@ -128,11 +102,18 @@ class NotFoundError(BaseExceptionMixin):
     code = StandardResponseCode.HTTP_404
 
     def __init__(
-        self,
-        *,
-        msg: str = CustomResponseCode.HTTP_404.msg,
-        data: Any = None,
-        background: BackgroundTask | None = None
+        self, *, msg: str = CustomResponseCode.HTTP_404.msg, data: Any = None, background: BackgroundTask | None = None
+    ):
+        super().__init__(msg=msg, data=data, background=background)
+
+
+class ValidationError(BaseExceptionMixin):
+    """校验字段异常：422（Unprocessable Entity）"""
+
+    code = StandardResponseCode.HTTP_422
+
+    def __init__(
+        self, *, msg: str = CustomResponseCode.HTTP_422.msg, data: Any = None, background: BackgroundTask | None = None
     ):
         super().__init__(msg=msg, data=data, background=background)
 
@@ -143,11 +124,7 @@ class ServerError(BaseExceptionMixin):
     code = StandardResponseCode.HTTP_500
 
     def __init__(
-        self,
-        *,
-        msg: str = CustomResponseCode.HTTP_500.msg,
-        data: Any = None,
-        background: BackgroundTask | None = None
+        self, *, msg: str = CustomResponseCode.HTTP_500.msg, data: Any = None, background: BackgroundTask | None = None
     ):
         super().__init__(msg=msg, data=data, background=background)
 
@@ -158,11 +135,7 @@ class GatewayError(BaseExceptionMixin):
     code = StandardResponseCode.HTTP_502
 
     def __init__(
-        self,
-        *,
-        msg: str = CustomResponseCode.HTTP_502.msg,
-        data: Any = None,
-        background: BackgroundTask | None = None
+        self, *, msg: str = CustomResponseCode.HTTP_502.msg, data: Any = None, background: BackgroundTask | None = None
     ):
         super().__init__(msg=msg, data=data, background=background)
 
@@ -173,9 +146,5 @@ class TokenError(HTTPError):
 
     code = StandardResponseCode.HTTP_401
 
-    def __init__(
-        self, *, msg: str = "身份验证失败", headers: dict[str, Any] | None = None
-    ):
-        super().__init__(
-            code=self.code, msg=msg, headers=headers or {"WWW-Authenticate": "Bearer"}
-        )
+    def __init__(self, *, msg: str = "身份验证失败", headers: dict[str, Any] | None = None):
+        super().__init__(code=self.code, msg=msg, headers=headers or {"WWW-Authenticate": "Bearer"})
