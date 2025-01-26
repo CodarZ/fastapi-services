@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from pydantic import EmailStr, Field, HttpUrl, field_validator
+from pydantic import ConfigDict, EmailStr, Field, HttpUrl, field_validator
 
 from backend.common.enums import StatusEnum
 from backend.common.schema import SchemaBase
@@ -28,6 +28,9 @@ class AuthPhoneByPassword(_VerifyPhone):
 
 class UserInfoSchemaBase(SchemaBase):
     """只允许获取可以修改的基础数据"""
+
+    model_config = ConfigDict(from_attributes=True)
+
     nickname: str | None = Field(description="昵称")
     email: EmailStr | None = Field(description="邮箱", examples=["test@example.com"])
     avatar: HttpUrl | None = Field(description="头像")
@@ -37,6 +40,9 @@ class UserInfoSchemaBase(SchemaBase):
 
 class UserInfoDetail(UserInfoSchemaBase, _VerifyPhone):
     """所有可以展示的数据"""
+
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     # uuid: str
     username: str | None = Field(description="用户名 默认为手机号")
