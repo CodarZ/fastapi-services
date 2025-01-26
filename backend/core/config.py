@@ -20,9 +20,7 @@ class Settings(BaseSettings):
 
     # 动态配置加载 `.env` 文件
     model_config = SettingsConfigDict(
-        env_file=os.path.join(
-            ENV_DIR, f'.env.{os.getenv("ENVIRONMENT", "development")}'
-        ),
+        env_file=os.path.join(ENV_DIR, f'.env.{os.getenv("ENVIRONMENT", "development")}'),
         env_file_encoding="utf-8",
     )
 
@@ -117,6 +115,8 @@ class Settings(BaseSettings):
     TOKEN_REFRESH_EXPIRE_SECONDS: int = 691200  # refresh token 过期时间 8 天，单位：秒
     TOKEN_REDIS_PREFIX: str = "fs:token"
     TOKEN_REFRESH_REDIS_PREFIX: str = "fs:refresh_token"
+    TOKEN_EXTRA_INFO_REDIS_PREFIX: str = "fs:token_extra_info"  # token 存储在 Redis 额外信息
+    TOKEN_ONLINE_REDIS_PREFIX: str = "fs:token_online"  # token 在线状态 存储在 Redis
     TOKEN_REQUEST_PATH_EXCLUDE: list[str] = [  # JWT / RBAC 白名单
         f"{API_ROUTE_PREFIX}/auth/login",
     ]
