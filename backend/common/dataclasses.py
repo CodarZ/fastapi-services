@@ -61,3 +61,10 @@ class AccessToken:
 class RefreshToken:
     refresh_token: str
     refresh_token_expire_time: datetime
+
+
+@dataclasses.dataclass
+class TokenPayload:
+    id: int
+    session_uuid: str
+    expire_time: datetime
