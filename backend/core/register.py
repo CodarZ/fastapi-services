@@ -7,8 +7,9 @@ from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 from fastapi_pagination import add_pagination
+from starlette.middleware.authentication import AuthenticationMiddleware
 
-from app.router import all_routes
+from backend.app.router import all_routes
 from backend.common.exception.handler import register_exception
 from backend.common.logger import register_logger
 from backend.common.response.check import ensure_unique_route_names, http_limit_callback
@@ -16,8 +17,9 @@ from backend.core.config import settings
 from backend.core.paths import STATIC_DIR
 from backend.database.mysql import create_table
 from backend.database.redis import redis_client
-from middleware.state import StateMiddleware
-from utils.openapi import simplify_operation_ids
+from backend.middleware.jwt_auth import JwtAuthMiddleware
+from backend.middleware.state import StateMiddleware
+from backend.utils.openapi import simplify_operation_ids
 
 
 @asynccontextmanager
@@ -92,6 +94,12 @@ def register_middleware(app) -> None:
     :param app:
     :return:
     """
+
+    # JWT 认证（必须）
+    app.add_middleware(
+        AuthenticationMiddleware, backend=JwtAuthMiddleware(), on_error=JwtAuthMiddleware.auth_exception_handler
+    )
+
     # 接口访问日志
     if settings.MIDDLEWARE_ACCESS:
         from backend.middleware.access import AccessMiddleware
