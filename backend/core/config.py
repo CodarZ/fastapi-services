@@ -125,8 +125,9 @@ class Settings(BaseSettings):
     COOKIE_REFRESH_TOKEN_KEY: str = "fs_refresh_token"
     COOKIE_REFRESH_TOKEN_EXPIRE_SECONDS: int = TOKEN_REFRESH_EXPIRE_SECONDS
 
-    # ==============  Sentry  ==================
-    CAPTCHA_EXPIRE_TIME: int = 300  # 验证码, 短信类数据过期时间 5 分钟，单位：秒
+    # ==============  Captcha  ==================
+    CAPTCHA_LOGIN_REDIS_PREFIX: str = "fs:login:captcha"  # Redis
+    CAPTCHA_LOGIN_EXPIRE_SECONDS: int = 300  # 验证码, 短信类数据过期时间 5 分钟，单位：秒
 
     # ==============  Ip location  ==============
     IP_LOCATION_PARSE: Literal["online", "offline", "false"] = "offline"
