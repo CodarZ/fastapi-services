@@ -7,6 +7,7 @@ from sqlalchemy_crud_plus import CRUDPlus
 
 from backend.app.admin.model import User
 from backend.app.admin.schema.user import RegisterUser, UpdateUser
+from backend.utils.timezone import timezone
 
 
 class CRUDUser(CRUDPlus[User]):
@@ -43,6 +44,18 @@ class CRUDUser(CRUDPlus[User]):
     async def update_user_info(self, db: AsyncSession, user_id: int, obj: UpdateUser):
         """更新用户信息"""
         return await self.update_model(db, user_id, obj)
+
+    async def update_login_time(self, db: AsyncSession, phone: str) -> int:
+        """
+        更新用户登录时间
+
+        :param db:
+        :param phone:
+        :return:
+        """
+        return await self.update_model_by_column(
+            db, {"last_login_time": timezone.now()}, phone=phone
+        )
 
 
 user_crud: CRUDUser = CRUDUser(User)

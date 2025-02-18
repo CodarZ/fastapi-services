@@ -3,8 +3,10 @@
 
 from fastapi import APIRouter
 
-from .sys.user import router as user_router
+from .auth import router as auth_router
+from .sys import router as sys_router
 
-admin_router = APIRouter(prefix="/system")
+admin_router = APIRouter()
 
-admin_router.include_router(user_router)
+admin_router.include_router(sys_router)
+admin_router.include_router(auth_router)
