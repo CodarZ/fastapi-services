@@ -57,6 +57,11 @@ class User(Base):
     is_verified: Mapped[bool] = mapped_column(
         Boolean, default=False, comment="是否实名认证"
     )
+    is_multi_login: Mapped[bool] = mapped_column(
+        Boolean(),
+        default=False,
+        comment="是否重复登陆(0否 1是)",
+    )
     salt: Mapped[bytes | None] = mapped_column(
         VARBINARY(255), default=None, comment="加密盐"
     )
