@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import bcrypt
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy_crud_plus import CRUDPlus
 
 from backend.app.admin.model import User
 from backend.app.admin.schema.user import RegisterUser, UpdateUser
+from backend.common.security.jwt import get_hash_password
 from backend.utils.timezone import timezone
 
 
@@ -14,8 +15,12 @@ class CRUDUser(CRUDPlus[User]):
     async def create(self, db: AsyncSession, obj: RegisterUser):
         """创建用户"""
 
+        salt = bcrypt.gensalt()
+        obj.password = get_hash_password(obj.password, salt)
+
         dict_user = obj.model_dump()
-        dict_user["username"] = dict_user["phone"]
+        dict_user.update({"salt": salt, "username": obj.phone})
+
         new_user = self.model(**dict_user)
         db.add(new_user)
 
