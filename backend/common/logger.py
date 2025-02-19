@@ -32,7 +32,9 @@ class InterceptHandler(logging.Handler):
             depth += 1
 
         # 使用 Loguru 记录日志
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
 
 
 def setup_logging():
@@ -49,7 +51,7 @@ def setup_logging():
     # 遍历所有子日志记录器，移除默认处理器，设置传播选项
     for name in logging.root.manager.loggerDict.keys():
         logging.getLogger(name).handlers = []  # 移除子日志器的所有处理器
-        if 'uvicorn.access' in name or 'watchfiles.main' in name:
+        if "uvicorn.access" in name or "watchfiles.main" in name:
             logging.getLogger(name).propagate = False  # 不传播日志
         else:
             logging.getLogger(name).propagate = True  # 传播日志到根记录器
@@ -65,7 +67,11 @@ def setup_logging():
     # https://github.com/snok/asgi-correlation-id/issues/7
     def correlation_id_filter(record) -> bool:
         cid = correlation_id.get(settings.LOG_CID_DEFAULT_VALUE)
-        record['correlation_id'] = cid[: settings.LOG_CID_UUID_LENGTH]
+        record["correlation_id"] = (
+            cid[: settings.LOG_CID_UUID_LENGTH]
+            if cid
+            else settings.LOG_CID_DEFAULT_VALUE
+        )
         return True
 
     # Configure loguru logger before starts logging
@@ -73,19 +79,21 @@ def setup_logging():
         handlers=[
             {
                 # 输出到标准输出
-                'sink': stdout,
-                'level': settings.LOG_STDOUT_LEVEL,
+                "sink": stdout,
+                "level": settings.LOG_STDOUT_LEVEL,
                 # 过滤低于 WARNING 的日志
-                'filter': lambda record: correlation_id_filter(record) and record['level'].no <= 25,
-                'format': settings.LOG_STD_FORMAT,
+                "filter": lambda record: correlation_id_filter(record)
+                and record["level"].no <= 25,
+                "format": settings.LOG_STD_FORMAT,
             },
             {
                 # 输出到标准错误
-                'sink': stderr,
-                'level': settings.LOG_STDERR_LEVEL,
+                "sink": stderr,
+                "level": settings.LOG_STDERR_LEVEL,
                 # 过滤 WARNING 及以上的日志
-                'filter': lambda record: correlation_id_filter(record) and record['level'].no >= 30,
-                'format': settings.LOG_STD_FORMAT,
+                "filter": lambda record: correlation_id_filter(record)
+                and record["level"].no >= 30,
+                "format": settings.LOG_STD_FORMAT,
             },
         ]
     )
@@ -106,11 +114,11 @@ def set_customize_logfile():
     # 配置 Loguru 日志文件处理器
     # https://loguru.readthedocs.io/en/stable/api/logger.html#loguru._logger.Logger.add
     log_config = {
-        'rotation': '10 MB',  # 单个日志文件大小超过 10MB 时轮转
-        'retention': '15 days',  # 保留最近 15 天的日志
-        'compression': 'tar.gz',  # 旧日志压缩为 .tar.gz 格式
-        'enqueue': True,  # 启用多线程安全
-        'format': settings.LOG_FILE_FORMAT,  # 日志格式化样式
+        "rotation": "10 MB",  # 单个日志文件大小超过 10MB 时轮转
+        "retention": "15 days",  # 保留最近 15 天的日志
+        "compression": "tar.gz",  # 旧日志压缩为 .tar.gz 格式
+        "enqueue": True,  # 启用多线程安全
+        "format": settings.LOG_FILE_FORMAT,  # 日志格式化样式
     }
 
     # 配置 stdout 日志文件

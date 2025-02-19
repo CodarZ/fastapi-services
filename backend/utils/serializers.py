@@ -16,7 +16,7 @@ RowData = Row | RowMapping | Any
 R = TypeVar("R", bound=RowData)
 
 
-def select_columns_serialize(row: R) -> dict:
+def select_columns_serialize(row: RowData) -> dict:
     """
     序列化 SQLAlchemy 查询结果的表列数据（不包含关联关系的列）。
 
@@ -53,7 +53,7 @@ def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
     return result
 
 
-def select_as_dict(row: R, use_alias: bool = False) -> dict:
+def select_as_dict(row: RowData, use_alias: bool = False) -> dict:
     """
     将 SQLAlchemy 查询结果转换为字典格式，可以包含关联数据。
 

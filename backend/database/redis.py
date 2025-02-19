@@ -37,7 +37,7 @@ class RedisClient(Redis):
             log.error("❌ Redis 连接异常 {}", e)
             sys.exit()
 
-    async def delete_prefix(self, prefix: str, exclude: str | list = None):
+    async def delete_prefix(self, prefix: str, exclude: str | list | None = None):
         """
         删除指定前缀的所有key
 

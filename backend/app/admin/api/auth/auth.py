@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, Request, Response,BackgroundTasks
+from fastapi import APIRouter, Depends, Form, Request, Response, BackgroundTasks
 from fastapi.security import HTTPBasicCredentials, OAuth2PasswordRequestForm
 from fastapi_limiter.depends import RateLimiter
 

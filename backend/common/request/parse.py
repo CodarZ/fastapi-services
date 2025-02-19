@@ -23,7 +23,7 @@ def get_request_ip(request: Request) -> str:
         if forwarded:
             ip = forwarded.split(",")[0]
         else:
-            ip = request.client.host
+            ip = request.client.host if request.client else "unknown"
     # 忽略 pytest
     if ip == "testclient":
         ip = "127.0.0.1"
@@ -71,7 +71,9 @@ async def parse_ip_info(request: Request) -> IpInfo:
         country, region, city = location.split(" ")
         return IpInfo(ip=ip, country=country, region=region, city=city)
     if settings.IP_LOCATION_PARSE == "online":
-        location_info = await get_location_online(ip, request.headers.get("User-Agent"))
+        location_info = await get_location_online(
+            ip, request.headers.get("User-Agent", "unknown user agent")
+        )
     elif settings.IP_LOCATION_PARSE == "offline":
         location_info = await get_location_offline(ip)
     else:

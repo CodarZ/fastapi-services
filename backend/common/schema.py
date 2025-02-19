@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, validate_email
 from pydantic_extra_types.phone_numbers import PhoneNumber
@@ -15,7 +16,8 @@ class CustomPhoneNumber(PhoneNumber):
     **属性**:
     - `default_region_code`: 默认为 `'CN'`，指定中国作为默认国家代码。
     """
-    default_region_code = 'CN'
+
+    default_region_code = "CN"
 
 
 class CustomEmailStr(EmailStr):
@@ -39,10 +41,10 @@ class CustomEmailStr(EmailStr):
     """
 
     @classmethod
-    def _validate(cls, __input_value: str) -> str:
+    def _validate(cls, __input_value: str) -> Optional[str]:
         # 如果输入为空字符串，返回 None
         # 否则使用 pydantic 的 validate_email 方法验证
-        return None if __input_value == '' else validate_email(__input_value)[1]
+        return None if __input_value == "" else validate_email(__input_value)[1]
 
 
 class SchemaBase(BaseModel):
@@ -70,8 +72,10 @@ class SchemaBase(BaseModel):
     print(data.dict())  # 输出: {"value": "Option A"}
     ```
     """
-    model_config = ConfigDict(use_enum_values=True,
-                              json_encoders={
-                                  datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
-                              }
-                              )
+
+    model_config = ConfigDict(
+        use_enum_values=True,
+        json_encoders={
+            datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S"),
+        },
+    )

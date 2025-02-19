@@ -4,7 +4,13 @@ from datetime import datetime
 from typing import Annotated
 
 from sqlalchemy import DateTime
-from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    MappedAsDataclass,
+    declared_attr,
+    mapped_column,
+)
 
 from backend.utils.timezone import timezone
 
@@ -12,8 +18,14 @@ from backend.utils.timezone import timezone
 # MappedBase -> id: Mapped[id_key]
 # DataClassBase && Base -> id: Mapped[id_key] = mapped_column(init=False)
 id_key = Annotated[
-    int, mapped_column(primary_key=True, index=True, autoincrement=True, sort_order=-999,
-                       comment='主键Id')
+    int,
+    mapped_column(
+        primary_key=True,
+        index=True,
+        autoincrement=True,
+        sort_order=-999,
+        comment="主键Id",
+    ),
 ]
 
 
@@ -21,20 +33,28 @@ id_key = Annotated[
 class UserMixin(MappedAsDataclass):
     """用户 Mixin 数据类"""
 
-    created_by: Mapped[int] = mapped_column(sort_order=996, comment='创建者')
-    updated_by: Mapped[int | None] = mapped_column(init=False, default=None, sort_order=997,
-                                                   comment='修改者')
+    created_by: Mapped[int] = mapped_column(sort_order=996, comment="创建者")
+    updated_by: Mapped[int | None] = mapped_column(
+        init=False, default=None, sort_order=997, comment="修改者"
+    )
 
 
 class DateTimeMixin(MappedAsDataclass):
     """日期时间 Mixin 数据类"""
 
     created_time: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), init=False, default_factory=timezone.now, sort_order=998,
-        comment='创建时间'
+        DateTime(timezone=True),
+        init=False,
+        default_factory=timezone.now,
+        sort_order=998,
+        comment="创建时间",
     )
     updated_time: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), init=False, onupdate=timezone.now, sort_order=999, comment='更新时间'
+        DateTime(timezone=True),
+        init=False,
+        onupdate=timezone.now,
+        sort_order=999,
+        comment="更新时间",
     )
 
 
@@ -47,8 +67,8 @@ class MappedBase(DeclarativeBase):
     """
 
     @declared_attr.directive
-    def __tablename__(self) -> str:
-        return self.__name__.lower()
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower()
 
 
 class DataClassBase(MappedAsDataclass, MappedBase):

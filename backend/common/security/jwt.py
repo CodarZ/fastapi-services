@@ -7,13 +7,17 @@ from uuid import uuid4
 from fastapi import Depends, Request
 from fastapi.security import HTTPBearer
 from fastapi.security.utils import get_authorization_scheme_param
+
 # JWT 相关库
 from jose import ExpiredSignatureError, JWTError, jwt
+
 # 密码加密验证库
 from pwdlib import PasswordHash
 from pwdlib.hashers.bcrypt import BcryptHasher
+
 # Pydantic 数据解析
 from pydantic_core import from_json
+
 # 异步数据库会话
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -91,7 +95,11 @@ async def create_access_token(user_id: str, multi_login: bool, **kwargs) -> Acce
         )
 
     # 返回结构化 Token 对象
-    return AccessToken(access_token=access_token, access_token_expire_time=expire, session_uuid=session_uuid)
+    return AccessToken(
+        access_token=access_token,
+        access_token_expire_time=expire,
+        session_uuid=session_uuid,
+    )
 
 
 async def create_refresh_token(user_id: str, multi_login: bool) -> RefreshToken:
@@ -115,7 +123,9 @@ async def create_refresh_token(user_id: str, multi_login: bool) -> RefreshToken:
     # 多设备登录控制
     if multi_login is False:
         # 删除该用户所有旧 Refresh Token（格式示例：REFRESH_TOKEN:1:*）
-        await redis_client.delete_prefix(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}")
+        await redis_client.delete_prefix(
+            f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}"
+        )
 
     # 存储 Refresh Token（Key 示例：REFRESH_TOKEN:1:eyJhbGciOiJIUzI1NiIsIn...）
     await redis_client.setex(
@@ -127,7 +137,9 @@ async def create_refresh_token(user_id: str, multi_login: bool) -> RefreshToken:
     return RefreshToken(refresh_token=refresh_token, refresh_token_expire_time=expire)
 
 
-async def create_new_token(user_id: str, token: str, refresh_token: str, multi_login: bool, **kwargs) -> NewToken:
+async def create_new_token(
+    user_id: str, token: str, refresh_token: str, multi_login: bool, **kwargs
+) -> NewToken:
     """
     通过 Refresh Token 生成新 Token
 
@@ -139,7 +151,9 @@ async def create_new_token(user_id: str, token: str, refresh_token: str, multi_l
     :return: NewToken 对象（包含新 Access/Refresh Token）
     """
     # 验证 Refresh Token 是否有效
-    redis_refresh_token = await redis_client.get(f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{refresh_token}")
+    redis_refresh_token = await redis_client.get(
+        f"{settings.TOKEN_REFRESH_REDIS_PREFIX}:{user_id}:{refresh_token}"
+    )
     # 检查 Redis 中是否存在且值匹配
     if not redis_refresh_token or redis_refresh_token != refresh_token:
         raise TokenError(msg="Refresh Token 已过期")
@@ -200,7 +214,11 @@ def jwt_decode(token: str) -> TokenPayload:
         raise TokenError(msg="Token 无效")
 
     # 返回结构化数据
-    return TokenPayload(id=int(user_id), session_uuid=session_uuid, expire_time=expire_time)
+    return TokenPayload(
+        id=int(user_id),
+        session_uuid=session_uuid,
+        expire_time=expire_time or (timezone.now() + timedelta(days=1)),
+    )
 
 
 async def get_current_user(db: AsyncSession, pk: int) -> User:
@@ -237,7 +255,9 @@ async def jwt_authentication(token: str) -> UserInfoDetail:
     user_id = token_payload.id
 
     # 验证 Token 是否在 Redis 中有效
-    token_verify = await redis_client.get(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{token_payload.session_uuid}")
+    token_verify = await redis_client.get(
+        f"{settings.TOKEN_REDIS_PREFIX}:{user_id}:{token_payload.session_uuid}"
+    )
     if not token_verify:
         raise TokenError(msg="Token 已过期")  # Redis 中不存在或已过期
 

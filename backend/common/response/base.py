@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from fastapi import Response
 from pydantic import BaseModel
@@ -77,7 +77,7 @@ class ResponseSchemaModel(ResponseModel, Generic[SchemaT]):
             return ResponseSchemaModel[GetApiDetail](code=res.code, msg=res.msg, data=GetApiDetail(...))
     """
 
-    data: SchemaT
+    data: Optional[SchemaT] = None
 
 
 class ResponseBase:
@@ -87,7 +87,11 @@ class ResponseBase:
 
     @staticmethod
     def __response(
-        *, res: CustomResponseCode | CustomResponse = None, msg: str = None, code: int = None, data: Any | None = None
+        *,
+        res: CustomResponseCode | CustomResponse,
+        msg: str | None = None,
+        code: int | None = None,
+        data: Any | None = None,
     ) -> ResponseModel | ResponseSchemaModel:
         response_code = code if code is not None else res.code
         response_msg = msg if msg is not None else res.msg
@@ -98,8 +102,8 @@ class ResponseBase:
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_200,
-        msg: str = None,
-        code: int = None,
+        msg: str | None = CustomResponseCode.HTTP_200.msg,
+        code: int = CustomResponseCode.HTTP_200.code,
         data: Any | None = None,
     ) -> ResponseModel | ResponseSchemaModel:
         """
@@ -117,8 +121,8 @@ class ResponseBase:
         self,
         *,
         res: CustomResponseCode | CustomResponse = CustomResponseCode.HTTP_400,
-        msg: str = None,
-        code: int = None,
+        msg: str = "服务未知错误",
+        code: int = CustomResponseCode.HTTP_400.code,
         data: Any = None,
     ) -> ResponseModel | ResponseSchemaModel:
         """

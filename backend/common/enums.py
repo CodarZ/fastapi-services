@@ -4,7 +4,7 @@ from enum import Enum, IntEnum as SourceIntEnum
 from typing import Type
 
 
-class _EnumBase:
+class _EnumBase(Enum):
     """
     枚举辅助基类，用于扩展枚举类的功能
 
@@ -63,12 +63,12 @@ class RoleDataRuleExpressionEnum(IntEnum):
 class MethodEnum(StrEnum):
     """请求方法"""
 
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    DELETE = 'DELETE'
-    PATCH = 'PATCH'
-    OPTIONS = 'OPTIONS'
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    DELETE = "DELETE"
+    PATCH = "PATCH"
+    OPTIONS = "OPTIONS"
 
 
 class LoginLogStatusEnum(IntEnum):
@@ -81,8 +81,8 @@ class LoginLogStatusEnum(IntEnum):
 class BuildTreeEnum(StrEnum):
     """构建树形结构类型枚举"""
 
-    traversal = 'traversal'
-    recursive = 'recursive'
+    traversal = "traversal"
+    recursive = "recursive"
 
 
 class OperaLogCipherEnum(IntEnum):

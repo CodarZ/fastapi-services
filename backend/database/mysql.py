@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import sys
+
 from typing import Annotated
 from uuid import uuid4
 
@@ -27,6 +29,7 @@ def create_engine_and_session(url: str):
         log.success("✅ MySQL 连接成功")
     except Exception as e:
         log.error("❌ MySQL 连接失败 {}", e)
+        sys.exit()
     else:
         # 创建异步会话工厂
         db_session = async_sessionmaker(
@@ -35,7 +38,7 @@ def create_engine_and_session(url: str):
         return engine, db_session
 
 
-async def get_db() -> AsyncSession:
+async def get_db():
     """
     session 数据库会话生成器。
 

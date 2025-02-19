@@ -11,12 +11,12 @@ from backend.utils.timezone import timezone
 class AccessMiddleware(BaseHTTPMiddleware):
     """
     请求日志中间件：
-    - 记录每个 HTTP 请求的关键信息，包括：
-      - 客户端 IP 地址
-      - HTTP 方法（如 GET、POST）
-      - 响应状态码（如 200、404）
-      - 请求路径（如 /api/v1/resource）
-      - 请求处理时间（毫秒级）
+        - 记录每个 HTTP 请求的关键信息，包括：
+        - 客户端 IP 地址
+        - HTTP 方法（如 GET、POST）
+        - 响应状态码（如 200、404）
+        - 请求路径（如 /api/v1/resource）
+        - 请求处理时间（毫秒级）
     """
 
     async def dispatch(
@@ -43,7 +43,7 @@ class AccessMiddleware(BaseHTTPMiddleware):
 
         # 记录请求日志
         log.info(
-            f'{request.client.host: <15} | {request.method: <5} | {f"{elapsed_time_ms}ms": <9} |'
+            f'{(request.client.host if request.client else "unknown"): <15} | {request.method: <5} | {f"{elapsed_time_ms}ms": <9} |'
             f" {response.status_code: <3} | "
             f"{request.url.path}"
         )
