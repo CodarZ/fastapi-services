@@ -23,8 +23,7 @@ async def register_user(obj: RegisterUser) -> ResponseModel:
 
 
 @router.delete(
-    "/deleteUser",
-    summary="通过 id 删除用户信息",
+    "/deleteUser", summary="通过 id 删除用户信息", dependencies=[DependsJwtAuth]
 )
 async def delete_user(id: int) -> ResponseModel:
     count = await user_service.delete(id=id)
@@ -36,6 +35,7 @@ async def delete_user(id: int) -> ResponseModel:
 @router.put(
     "/updateUser",
     summary="通过 id 更新用户必要的信息，不可修改状态等",
+    dependencies=[DependsJwtAuth],
 )
 async def update_user(id: int, obj: UpdateUser) -> ResponseModel:
     count = await user_service.update(id=id, obj=obj)
@@ -48,6 +48,7 @@ async def update_user(id: int, obj: UpdateUser) -> ResponseModel:
     "/getUser",
     summary="获取用户详情信息",
     response_model=ResponseSchemaModel[UserInfoDetail],
+    dependencies=[DependsJwtAuth],
 )
 async def get_user(id: int) -> ResponseModel:
     current_user = await user_service.get(id=id)

@@ -76,6 +76,7 @@ async def create_access_token(user_id: str, multi_login: bool, **kwargs) -> Acce
 
     # 多设备登录控制逻辑
     if multi_login is False:
+        # TODO 删除 extra info
         # 删除该用户所有旧 Token（格式示例：TOKEN_REDIS_PREFIX:1）
         await redis_client.delete_prefix(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}")
 

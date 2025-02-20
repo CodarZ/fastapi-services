@@ -8,8 +8,10 @@ from backend.common.schema import SchemaBase
 
 
 class SwaggerToken(SchemaBase):
+    """便于swagger 直接使用的 token"""
+
     access_token: str
-    token_type: str = 'Bearer'
+    # token_type: str = "Bearer"
     user: UserInfoDetail
 
 
@@ -19,11 +21,27 @@ class AccessTokenBase(SchemaBase):
     session_uuid: str
 
 
+class NewToken(AccessTokenBase):
+    """新 token"""
+
+    pass
+
+
+class KickOutToken(SchemaBase):
+    """踢出用户"""
+
+    session_uuid: str
+
+
 class LoginUserInfo(AccessTokenBase):
+    """附带登录用户信息"""
+
     user: UserInfoDetail
 
 
 class LoginTokenDetail(SchemaBase):
+    """token 信息"""
+
     id: int
     session_uuid: str
     username: str
