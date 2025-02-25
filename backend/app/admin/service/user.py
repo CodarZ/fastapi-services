@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from sqlalchemy import Select
 from backend.app.admin.crud.user import user_crud
 from backend.app.admin.model import User
 from backend.app.admin.schema.user import RegisterUser, UpdateUser
@@ -58,6 +59,11 @@ class UserService:
             if not user:
                 raise errors.NotFoundError(msg="用户不存在")
             return user
+
+    async def get_list(
+        self,
+    ) -> Select:
+        return await user_crud.get_list()
 
 
 user_service: UserService = UserService()
