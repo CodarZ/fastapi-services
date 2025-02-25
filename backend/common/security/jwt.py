@@ -76,9 +76,11 @@ async def create_access_token(user_id: str, multi_login: bool, **kwargs) -> Acce
 
     # 多设备登录控制逻辑
     if multi_login is False:
-        # TODO 删除 extra info
         # 删除该用户所有旧 Token（格式示例：TOKEN_REDIS_PREFIX:1）
         await redis_client.delete_prefix(f"{settings.TOKEN_REDIS_PREFIX}:{user_id}")
+        await redis_client.delete_prefix(
+            f"{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}"
+        )
 
     # 存储 Token 到 Redis
     await redis_client.setex(
@@ -90,7 +92,7 @@ async def create_access_token(user_id: str, multi_login: bool, **kwargs) -> Acce
     # 存储附加信息（如用户权限数据）
     if kwargs:
         await redis_client.setex(
-            f"{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{session_uuid}",  # Key 示例：TOKEN_EXTRA_INFO:d7d1a8c0...
+            f"{settings.TOKEN_EXTRA_INFO_REDIS_PREFIX}:{user_id}:{session_uuid}",  # Key 示例：TOKEN_EXTRA_INFO:1:d7d1a8c0...
             settings.TOKEN_EXPIRE_SECONDS,  # 与 Token 相同的过期时间
             json.dumps(kwargs, ensure_ascii=False),  # 序列化为 JSON 字符串
         )
