@@ -46,7 +46,6 @@ class LoginTokenDetail(SchemaBase):
     session_uuid: str
     username: str
     nickname: str
-    phone: str
     ip: str
     os: str
     browser: str
